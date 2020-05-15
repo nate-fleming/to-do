@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ToDo } from './todo-list';
-import { Popover, Position, Menu, Text, TextInput, Button, Badge, Pane } from 'evergreen-ui';
+import { Popover, Position, Menu, Text, TextInput, Button, Badge, Pane, Table } from 'evergreen-ui';
 
 
 interface IProps {
@@ -16,7 +16,8 @@ const ToDoListItem: React.FC<IProps> = ({todo,index, onDelete, onEdit}) => {
     const [isCompleted, toggleCompleted] = useState(todo.isCompleted)
     
     return (
-        <>
+        <Table.Row key={index} isSelectable>
+            <Pane verticalAlign='center' marginLeft={16}>
         { isEditable ?
         <> 
         <TextInput
@@ -44,10 +45,11 @@ const ToDoListItem: React.FC<IProps> = ({todo,index, onDelete, onEdit}) => {
           </Menu>
         }
         >
-           <Pane width='100%' background='tinted1'><Text>{title} {isCompleted && <Badge color="green">Completed</Badge>}</Text></Pane>
+           <Text  width='100%'>{title} {isCompleted && <Badge marginLeft='auto' marginRight={16} color="green">Completed</Badge>}</Text>
         </Popover>
     }
-    </>
+    </Pane>
+    </Table.Row>
     )
 }
 

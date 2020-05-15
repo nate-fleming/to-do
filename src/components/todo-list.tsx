@@ -53,22 +53,17 @@ const onEditToDo = (i: number, title:string) => {
         </Pane>
         <Card
         elevation={1}
-        background="greenTint"
         float="left"
-        width={800}
-        height={800}
-        margin='auto'
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        flexDirection="column"
+        width={400}
+        height='auto'
+        background='white'
        >
             <Table>
                 <TableHead>
                     <Table.TextHeaderCell>Todos</Table.TextHeaderCell>
                 </TableHead>
                 <TableBody>
-                {todos.map((todo, i) => <Table.Row key={i} isSelectable><ToDoListItem todo={todo} index={i} onDelete={onDeleteTodo} onEdit={onEditToDo}/></Table.Row>)}
+                {todos.map((todo, i) => <ToDoListItem todo={todo} index={i} onDelete={onDeleteTodo} onEdit={onEditToDo}/>)}
                 </TableBody>
             </Table>
         </Card>
