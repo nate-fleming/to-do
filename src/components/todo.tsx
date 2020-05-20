@@ -16,13 +16,13 @@ interface IProps {
   todo: ToDo;
   index: number;
   onDelete(index: number): void;
-  onEdit(index: number, title: string): void;
+  onEdit(todo: ToDo): void;
 }
 
 const ToDoListItem: React.FC<IProps> = ({ todo, index, onDelete, onEdit }) => {
+  const { id, title, isCompleted } = todo;
   const [isEditable, setIsEditable] = useState(false);
-  const [title, setNewTitle] = useState(todo.title);
-  const [isCompleted, toggleCompleted] = useState(todo.isCompleted);
+  const [newTitle, setNewTitle] = useState(title);
 
   return (
     <Table.Row key={index} isSelectable>
@@ -34,11 +34,16 @@ const ToDoListItem: React.FC<IProps> = ({ todo, index, onDelete, onEdit }) => {
               name="add-todo"
               placeholder={title}
               onChange={(e: any) => setNewTitle(e.target.value)}
-              value={title}
+              value={newTitle}
             />
             <Button
               marginLeft={16}
               onClick={() => {
+                onEdit({
+                  id: id,
+                  title: newTitle,
+                  isCompleted: isCompleted,
+                });
                 setIsEditable(false);
               }}
             >
@@ -52,7 +57,13 @@ const ToDoListItem: React.FC<IProps> = ({ todo, index, onDelete, onEdit }) => {
               <Menu>
                 <Menu.Item
                   icon="cross"
-                  onSelect={() => toggleCompleted(!isCompleted)}
+                  onSelect={() =>
+                    onEdit({
+                      id: todo.id,
+                      title: newTitle,
+                      isCompleted: !todo.isCompleted,
+                    })
+                  }
                 >
                   Complete...
                 </Menu.Item>
@@ -62,7 +73,7 @@ const ToDoListItem: React.FC<IProps> = ({ todo, index, onDelete, onEdit }) => {
                 <Menu.Item
                   icon="trash"
                   intent="danger"
-                  onSelect={() => onDelete(index)}
+                  onSelect={() => onDelete(id)}
                 >
                   Delete...
                 </Menu.Item>

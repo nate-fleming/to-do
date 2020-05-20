@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -11,42 +11,45 @@ import {
   Card,
 } from "evergreen-ui";
 import ToDoListItem from "./todo";
+import { getTodos, addTodo, updateTodo, deleteTodo } from "../api/todos";
 
 export type ToDo = {
+  id: number;
   title: string;
   isCompleted: boolean;
 };
 
-const sampleTodos: ToDo[] = [
-  { title: "Hello", isCompleted: false },
-  { title: "There", isCompleted: false },
-];
-
 const ToDoList: React.FC = () => {
-  const [todos, setTodos] = useState(sampleTodos);
+  const [todos, setTodos] = useState<ToDo[]>([]);
   const [isShown, setIsShown] = useState(false);
   const [newTodo, setNewTodo] = useState("");
 
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const fetchTodos = () => {
+    getTodos().then((res) => {
+      setTodos(res);
+    });
+  };
+
   const onAddTodo = () => {
-    setTodos([...todos, { title: newTodo, isCompleted: false }]);
     setIsShown(false);
-    setNewTodo("");
+    addTodo(newTodo);
     if (newTodo.length) toaster.notify(`Added ${newTodo} to list`);
   };
 
-  const onDeleteTodo = (i: number) => {
-    const filteredTodos = todos.filter((todo, index) => index !== i);
-    toaster.notify(`Deleted ${todos[i].title} from list`);
-    setTodos(filteredTodos);
+  const onDeleteTodo = (id: number) => {
+    const deletedTodo = todos.find((todo) => todo.id === id);
+    toaster.notify(`Deleted ${deletedTodo} from list`);
+    deleteTodo(id);
   };
 
-  const onEditToDo = (i: number, title: string) => {
-    const newTodos = todos.map((todo, index) =>
-      index === i ? { ...todo, title: title } : todo
-    );
-    setTodos(newTodos);
-    console.log(todos);
+  const onEditToDo = (todo: ToDo) => {
+    updateTodo(todo);
   };
+
   return (
     <>
       <Button onClick={() => setIsShown(true)}>Add ToDo</Button>
@@ -79,15 +82,16 @@ const ToDoList: React.FC = () => {
             <Table.TextHeaderCell>Todos</Table.TextHeaderCell>
           </TableHead>
           <TableBody>
-            {todos.map((todo, i) => (
-              <ToDoListItem
-                key={i}
-                todo={todo}
-                index={i}
-                onDelete={onDeleteTodo}
-                onEdit={onEditToDo}
-              />
-            ))}
+            {todos.length > 0 &&
+              todos.map((todo, i) => (
+                <ToDoListItem
+                  key={i}
+                  todo={todo}
+                  index={i}
+                  onDelete={onDeleteTodo}
+                  onEdit={onEditToDo}
+                />
+              ))}
           </TableBody>
         </Table>
       </Card>
