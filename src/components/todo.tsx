@@ -25,78 +25,84 @@ const ToDoListItem: React.FC<IProps> = ({ todo, index, onDelete, onEdit }) => {
   const [newTitle, setNewTitle] = useState(title);
 
   return (
-    <Table.Row key={index} isSelectable>
-      <Pane display="flex" alignItems="center" marginLeft={16} width="100%">
-        {isEditable ? (
-          <>
-            <TextInput
-              width="auto"
-              name="add-todo"
-              placeholder={title}
-              onChange={(e: any) => setNewTitle(e.target.value)}
-              value={newTitle}
-            />
-            <Button
-              marginLeft={16}
-              onClick={() => {
-                onEdit({
-                  id: id,
-                  title: newTitle,
-                  isCompleted: isCompleted,
-                });
-                setIsEditable(false);
-              }}
-            >
-              Edit
-            </Button>
-          </>
-        ) : (
-          <Popover
-            position={Position.BOTTOM_LEFT}
-            content={
-              <Menu>
-                <Menu.Item
-                  icon="cross"
-                  onSelect={() =>
-                    onEdit({
-                      id: todo.id,
-                      title: newTitle,
-                      isCompleted: !todo.isCompleted,
-                    })
-                  }
-                >
-                  Complete...
-                </Menu.Item>
-                <Menu.Item icon="edit" onSelect={() => setIsEditable(true)}>
-                  Edit...
-                </Menu.Item>
-                <Menu.Item
-                  icon="trash"
-                  intent="danger"
-                  onSelect={() => onDelete(id)}
-                >
-                  Delete...
-                </Menu.Item>
-              </Menu>
-            }
+    <Pane
+      display="flex"
+      alignItems="center"
+      width="100%"
+      padding={16}
+      style={{ cursor: "pointer" }}
+      borderBottom
+    >
+      {isEditable ? (
+        <Pane>
+          <TextInput
+            name="edit-todo"
+            placeholder={title}
+            onChange={(e: any) => setNewTitle(e.target.value)}
+            value={newTitle}
+            isInvalid={newTitle.length === 0}
+          />
+          <Button
+            marginLeft={16}
+            onClick={() => {
+              onEdit({
+                id: id,
+                title: newTitle,
+                isCompleted: isCompleted,
+              });
+              setIsEditable(false);
+            }}
           >
-            <Pane
-              width="100%"
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Text>{title}</Text>
-              {isCompleted && (
-                <Badge marginLeft="auto" marginRight={16} color="green">
-                  Completed
-                </Badge>
-              )}
-            </Pane>
-          </Popover>
-        )}
-      </Pane>
-    </Table.Row>
+            Edit
+          </Button>
+        </Pane>
+      ) : (
+        <Popover
+          position={Position.BOTTOM_LEFT}
+          content={
+            <Menu>
+              <Menu.Item
+                icon="cross"
+                onSelect={() =>
+                  onEdit({
+                    id: id,
+                    title: newTitle,
+                    isCompleted: !isCompleted,
+                  })
+                }
+              >
+                Complete...
+              </Menu.Item>
+              <Menu.Item icon="edit" onSelect={() => setIsEditable(true)}>
+                Edit...
+              </Menu.Item>
+              <Menu.Item
+                icon="trash"
+                intent="danger"
+                onSelect={() => onDelete(id)}
+              >
+                Delete...
+              </Menu.Item>
+            </Menu>
+          }
+        >
+          <Pane
+            width="100%"
+            height="100%"
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Text>{title}</Text>
+            {isCompleted && (
+              <Badge marginLeft="auto" marginRight={30} color="green">
+                Completed
+              </Badge>
+            )}
+          </Pane>
+        </Popover>
+      )}
+    </Pane>
   );
 };
 

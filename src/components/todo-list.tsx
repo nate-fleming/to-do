@@ -9,6 +9,7 @@ import {
   TextInput,
   toaster,
   Card,
+  UnorderedList,
 } from "evergreen-ui";
 import ToDoListItem from "./todo";
 import { getTodos, addTodo, updateTodo, deleteTodo } from "../api/todos";
@@ -28,26 +29,29 @@ const ToDoList: React.FC = () => {
     fetchTodos();
   }, []);
 
-  const fetchTodos = () => {
-    getTodos().then((res) => {
-      setTodos(res);
-    });
+  const fetchTodos = async () => {
+    const response = await getTodos();
+    response.sort((a: ToDo, b: ToDo) => a.id - b.id);
+    setTodos(response);
   };
 
-  const onAddTodo = () => {
+  const onAddTodo = async () => {
     setIsShown(false);
-    addTodo(newTodo);
-    if (newTodo.length) toaster.notify(`Added ${newTodo} to list`);
+    await addTodo(newTodo);
+    toaster.notify(`Added ${newTodo} to list`);
+    fetchTodos();
   };
 
-  const onDeleteTodo = (id: number) => {
+  const onDeleteTodo = async (id: number) => {
     const deletedTodo = todos.find((todo) => todo.id === id);
-    toaster.notify(`Deleted ${deletedTodo} from list`);
-    deleteTodo(id);
+    toaster.notify(`Deleted ${deletedTodo?.title} from list`);
+    await deleteTodo(id);
+    fetchTodos();
   };
 
-  const onEditToDo = (todo: ToDo) => {
-    updateTodo(todo);
+  const onEditToDo = async (todo: ToDo) => {
+    await updateTodo(todo);
+    fetchTodos();
   };
 
   return (
@@ -56,7 +60,7 @@ const ToDoList: React.FC = () => {
       <Pane>
         <Dialog
           isShown={isShown}
-          title="Add ToDo"
+          title="add-todo-modal"
           onCancel={() => setIsShown(false)}
           onConfirm={onAddTodo}
           confirmLabel="Add ToDo"
